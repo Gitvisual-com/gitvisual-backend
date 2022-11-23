@@ -36,6 +36,10 @@ const postSchema = mongoose.Schema(
       type: Number,
       default: 0,
     },
+    totalComments: {
+        type: Number,
+        default: 0
+    }
   },
   {
     timestamps: true,
