@@ -18,8 +18,9 @@ const createPost = catchAsync(async (req, res) => {
 });
 
 const getPosts = catchAsync(async (req, res) => {
+  const filter = pick(req.query, ['username']);
   const options = pick(req.query, ['sortBy', 'limit', 'page']);
-  const result = await postService.queryPosts(options);
+  const result = await postService.queryPosts(filter, options);
   res.send(result);
 });
 

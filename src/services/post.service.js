@@ -19,8 +19,8 @@ const createPost = async (postBody) => {
  * @param {number} [options.page] - Current page (default = 1)
  * @returns {Promise<QueryResult>}
  */
-const queryPosts = async (options) => {
-  const posts = await Post.paginate(options);
+const queryPosts = async (filter, options) => {
+  const posts = await Post.paginate(filter, options);
   return posts;
 };
 
