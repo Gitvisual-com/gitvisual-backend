@@ -21,6 +21,9 @@ if (config.env !== 'test') {
   app.use(morgan.errorHandler);
 }
 
+// server static content
+app.use(express.static('uploads'));
+
 // set security HTTP headers
 app.use(helmet());
 

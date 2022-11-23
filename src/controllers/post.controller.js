@@ -6,7 +6,14 @@ const ApiError = require('../utils/ApiError');
 const { postService } = require('../services');
 
 const createPost = catchAsync(async (req, res) => {
-  const post = await postService.createPost(req.body);
+  const postPayload = {
+    ...req.body,
+    posterId: req.user.id,
+    media: req.files.map((file) => {
+      return { fileType: file.mimetype, filePath: file.path };
+    }),
+  };
+  const post = await postService.createPost(postPayload);
   res.status(httpStatus.CREATED).send(post);
 });
 

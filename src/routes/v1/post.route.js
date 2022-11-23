@@ -11,10 +11,10 @@ const jsonify = require('../../middlewares/jsonify');
 const router = express.Router();
 const storage = multer.diskStorage({
   destination(_req, _res, cb) {
-    cb(null, './uploads');
+    cb(null, './public/uploads');
   },
   filename(_req, file, cb) {
-    cb(null, `${file.originalname}-${uuidv4()}`);
+    cb(null, `${uuidv4()}-${file.originalname}`);
   },
 });
 const upload = multer({ storage });

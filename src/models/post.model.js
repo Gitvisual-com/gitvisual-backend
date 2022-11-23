@@ -16,7 +16,6 @@ const postSchema = mongoose.Schema(
     description: {
       type: String,
       required: true,
-      unique: true,
     },
     tools: {
       type: Array,
