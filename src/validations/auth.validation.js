@@ -6,6 +6,17 @@ const register = {
     email: Joi.string().required().email(),
     password: Joi.string().required().custom(password),
     name: Joi.string().required(),
+    username: Joi.string().required(),
+    about: Joi.string(),
+    location: Joi.string(),
+    socials: {
+      twitter: Joi.string(),
+      gitlab: Joi.string(),
+      github: Joi.string(),
+      linkedin: Joi.string(),
+      behance: Joi.string(),
+      codepen: Joi.string(),
+    },
   }),
 };
 

@@ -23,6 +23,12 @@ const userSchema = mongoose.Schema(
         }
       },
     },
+    username: {
+      type: String,
+      required: true,
+      trim: true,
+      lowercase: true,
+    },
     password: {
       type: String,
       required: true,
@@ -34,6 +40,48 @@ const userSchema = mongoose.Schema(
         }
       },
       private: true, // used by the toJSON plugin
+    },
+    socials: {
+      twitter: {
+        type: String,
+        trim: true,
+      },
+      gitlab: {
+        type: String,
+        trim: true,
+      },
+      github: {
+        type: String,
+        trim: true,
+      },
+      linkedin: {
+        type: String,
+        trim: true,
+      },
+      behance: {
+        type: String,
+        trim: true,
+      },
+      codepen: {
+        type: String,
+        trim: true,
+      },
+    },
+    location: {
+      type: String,
+      trim: true,
+    },
+    followerCount: {
+      type: Number,
+      default: 0,
+    },
+    followingCount: {
+      type: Number,
+      default: 0,
+    },
+    postsCount: {
+      type: Number,
+      default: 0,
     },
     role: {
       type: String,
@@ -62,6 +110,17 @@ userSchema.plugin(paginate);
  */
 userSchema.statics.isEmailTaken = async function (email, excludeUserId) {
   const user = await this.findOne({ email, _id: { $ne: excludeUserId } });
+  return !!user;
+};
+
+/**
+ * Check if username is taken
+ * @param {string} usename - The user's username
+ * @param {ObjectId} [excludeUserId] - The id of the user to be excluded
+ * @returns {Promise<boolean>}
+ */
+userSchema.statics.isUsernameTaken = async function (username, excludeUserId) {
+  const user = await this.findOne({ username, _id: { $ne: excludeUserId } });
   return !!user;
 };
 
