@@ -10,7 +10,7 @@ const createPost = catchAsync(async (req, res) => {
     ...req.body,
     posterId: req.user.id,
     media: req.files.map((file) => {
-      return { fileType: file.mimetype, filePath: file.path };
+      return { fileType: file.mimetype, filePath: file.path.replace('public', '') };
     }),
   };
   const post = await postService.createPost(postPayload);
@@ -25,7 +25,7 @@ const getPosts = catchAsync(async (req, res) => {
 });
 
 const getPost = catchAsync(async (req, res) => {
-  const post = await postService.getUserById(req.params.postId);
+  const post = await postService.getPostById(req.params.postId);
   if (!post) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Post not found');
   }
@@ -33,12 +33,18 @@ const getPost = catchAsync(async (req, res) => {
 });
 
 const updatePost = catchAsync(async (req, res) => {
-  const post = await postService.updateUserById(req.params.postId, req.body);
+  const postPayload = {
+    ...req.body,
+    media: req.files.map((file) => {
+      return { fileType: file.mimetype, filePath: file.path.replace('public', '') };
+    }),
+  };
+  const post = await postService.updatePostById(req.params.postId, postPayload);
   res.send(post);
 });
 
 const deletePost = catchAsync(async (req, res) => {
-  await postService.deleteUserById(req.params.postId);
+  await postService.deletePostById(req.params.postId);
   res.status(httpStatus.NO_CONTENT).send();
 });
 

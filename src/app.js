@@ -22,7 +22,7 @@ if (config.env !== 'test') {
 }
 
 // server static content
-app.use(express.static('uploads'));
+app.use(express.static('public'));
 
 // set security HTTP headers
 app.use(helmet());
