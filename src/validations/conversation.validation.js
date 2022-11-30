@@ -1,64 +1,44 @@
 const Joi = require('joi');
 const { objectId } = require('./custom.validation');
 
-const createUser = {
-  body: Joi.object().keys({
-    email: Joi.string().required().email(),
-    password: Joi.string().required(),
-    name: Joi.string().required(),
-    role: Joi.string().required().valid('user', 'admin'),
+const getMessagesForConversation = {
+  body: Joi.object.keys({
+    id: Joi.required().custom(objectId),
+    initialFetch: Joi.boolean().required(),
+    lastId: Joi.when('initialFetch', {
+      is: false,
+      then: Joi.required().custom(objectId),
+      otherwise: Joi.forbidden(),
+    }),
   }),
 };
 
-const getUsers = {
-  query: Joi.object().keys({
-    name: Joi.string(),
-    role: Joi.string(),
-    sortBy: Joi.string(),
-    limit: Joi.number().integer(),
-    page: Joi.number().integer(),
+const sendMessage = {
+  body: Joi.object.keys({
+    conversationId: Joi.required().custom(objectId),
+    value: Joi.string().min(1).max(500).required(),
+    receiver: Joi.required().custom(objectId),
   }),
 };
 
-const getUser = {
-  params: Joi.object().keys({
-    userId: Joi.string().custom(objectId),
+const readMessages = {
+  body: Joi.object.keys({
+    conversationId: Joi.objectId().required(),
+    messageIds: Joi.array().required(),
   }),
 };
 
-const updateUser = {
-  params: Joi.object().keys({
-    userId: Joi.required().custom(objectId),
-  }),
-  body: Joi.object()
-    .keys({
-      password: Joi.string(),
-      name: Joi.string(),
-      username: Joi.string(),
-      about: Joi.string(),
-      location: Joi.string(),
-      socials: {
-        twitter: Joi.string(),
-        gitlab: Joi.string(),
-        github: Joi.string(),
-        linkedin: Joi.string(),
-        behance: Joi.string(),
-        codepen: Joi.string(),
-      },
-    })
-    .min(1),
-};
-
-const deleteUser = {
-  params: Joi.object().keys({
-    userId: Joi.string().custom(objectId),
+const sendMedia = {
+  body: Joi.object.keys({
+    conversationId: Joi.custom(objectId).required(),
+    uuid: Joi.string().guid().required(),
+    receiver: Joi.custom(objectId).required(),
   }),
 };
 
 module.exports = {
-  createUser,
-  getUsers,
-  getUser,
-  updateUser,
-  deleteUser,
+  sendMessage,
+  sendMedia,
+  readMessages,
+  getMessagesForConversation,
 };

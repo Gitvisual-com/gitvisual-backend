@@ -1,64 +1,86 @@
-const sendMessage = (req, data) => {
-  const io = req.app.get('socketio');
+const httpStatus = require('http-status');
+const { Message, Conversation } = require('../models');
+const ApiError = require('../utils/ApiError');
 
-  const { message, receiver } = { ...data };
-  io.sockets.in(receiver._id).emit('newMessage', {
-    ...message,
-  });
+/**
+ * Create a message
+ * @param {Object} messageBody
+ * @returns {Promise<Message>}
+ */
+const createMessage = async (messageBody) => {
+  return Message.create(messageBody);
 };
 
-const sendReadMessage = (req, data) => {
-  const io = req.app.get('socketio');
-
-  const { messageIds, roomId, receiver } = { ...data };
-  io.sockets.in(receiver).emit('readMessages', {
-    messageIds,
-    roomId,
-  });
+/**
+ * Query for messages
+ * @param {Object} options - Query options
+ * @param {string} [options.sortBy] - Sort option in the format: sortField:(desc|asc)
+ * @param {number} [options.limit] - Maximum number of results per page (default = 10)
+ * @param {number} [options.page] - Current page (default = 1)
+ * @returns {Promise<QueryResult>}
+ */
+const queryMessages = async (filter, options) => {
+  const messages = await Message.paginate(filter, options);
+  return messages;
 };
 
-const sendImageMessageRequest = (req, data) => {
-  const io = req.app.get('socketio');
-
-  const { message, receiver } = { ...data };
-  io.sockets.in(receiver._id).emit('imageMessageRequest', {
-    ...message,
-  });
+/**
+ * Get message by id
+ * @param {ObjectId} id
+ * @returns {Promise<Message>}
+ */
+const getMessageById = async (id) => {
+  return Message.findById(id);
 };
 
-const sendImageMessage = (req, data) => {
-  const io = req.app.get('socketio');
-
-  const { message, receiver } = { ...data };
-  io.sockets.in(receiver._id).emit('imageMessage', {
-    ...message,
-    receiver: receiver._id,
-  });
+const getConversationById = async (id) => {
+  return Conversation.findById(id);
 };
 
-const sendRoom = (req, data) => {
-  const io = req.app.get('socketio');
-  const { userId, room } = data;
-  io.sockets.in(userId).emit('newRoom', {
-    ...room,
-    lastMessage: [],
-  });
+/**
+ * Get message by userId
+ * @param {string} userId
+ * @returns {Promise<Message>}
+ */
+const getMessagesByUserId = async (userId) => {
+  return Message.find({ userId });
 };
 
-const sendActivityStatus = (data) => {
-  const { req, user, userId, activityStatus } = data;
-  const io = req.app.get('socketio');
-  io.sockets.in(userId).emit('activityStatusUpdate', {
-    activityStatus,
-    user,
-  });
+/**
+ * Update message by id
+ * @param {ObjectId} messageId
+ * @param {Object} updateBody
+ * @returns {Promise<Message>}
+ */
+const updateConversationById = async (conversationId, updateBody) => {
+  const conversation = await getConversationById(conversationId);
+  if (!conversation) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Message not found');
+  }
+  Object.assign(conversation, updateBody);
+  await conversation.save();
+  return conversation;
+};
+
+/**
+ * Delete message by id
+ * @param {ObjectId} messageId
+ * @returns {Promise<Message>}
+ */
+const deleteMessageById = async (messageId) => {
+  const message = await getMessageById(messageId);
+  if (!message) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Message not found');
+  }
+  await message.remove();
+  return message;
 };
 
 module.exports = {
-  sendMessage,
-  sendReadMessage,
-  sendImageMessageRequest,
-  sendImageMessage,
-  sendRoom,
-  sendActivityStatus,
+  createMessage,
+  queryMessages,
+  getMessageById,
+  getMessagesByUserId,
+  updateConversationById,
+  deleteMessageById,
 };

@@ -2,9 +2,10 @@ const express = require('express');
 
 const auth = require('../../middlewares/auth');
 const upload = require('../../middlewares/storage');
-const conversationController = require('../controllers/conversationController');
-const conversationValidator = require('../middleware/schemaValidators/conversationValidator');
-const chechRoom = require('../middleware/chechRoom');
+const validate = require('../../middlewares/validate');
+const conversationController = require('../../controllers/conversation.controller');
+const conversationValidaton = require('../../validations/conversation.validation');
+const checkConversation = require('../../middlewares/checkConversation');
 
 const router = express.Router();
 
@@ -13,32 +14,32 @@ router.get('/', auth('getConversations'), conversationController.getConversation
 router.get(
   '/messages',
   auth('getMessages'),
-  conversationValidator.getMessagesForRoom,
-  conversationController.getMessagesForRoom
+  validate(conversationValidaton.getMessagesForConversation),
+  conversationController.getMessagesForConversation
 );
 
 router.post(
   '/media',
   auth('sendMessages'),
   upload.single('file'),
-  conversationValidator.sendImage,
-  chechRoom,
-  conversationController.createImageMessage
+  validate(conversationValidaton.sendMedia),
+  checkConversation,
+  conversationController.sendMedia
 );
 
 router.post(
   '/message',
   auth('sendMessages'),
-  conversationValidator.sendMessage,
-  chechRoom,
+  validate(conversationValidaton.sendMessage),
+  checkConversation,
   conversationController.sendMessage
 );
 
 router.post(
   '/messages/read',
   auth('readMessages'),
-  conversationValidator.readMessages,
-  chechRoom,
+  validate(conversationValidaton.readMessages),
+  checkConversation,
   conversationController.readMessages
 );
 

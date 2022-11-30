@@ -1,6 +1,7 @@
 const httpStatus = require('http-status');
 const socketIO = require('socket.io');
 const tokenService = require('../services/token.service');
+const userService = require('../services/user.service');
 const ApiError = require('../utils/ApiError');
 const { tokenTypes } = require('./tokens');
 
@@ -11,6 +12,7 @@ io.use((socket, next) => {
     const token = socket.handshake.query.token.split(' ')[1];
     tokenService.verifyToken(token, tokenTypes.ACCESS, (err, decoded) => {
       if (err) return next(new Error('Authentication error'));
+      // eslint-disable-next-line no-param-reassign
       socket.userData = decoded;
       next();
     });
@@ -21,8 +23,8 @@ io.use((socket, next) => {
   // Connection now authenticated to receive further events
   socket.join(socket.userData.userId);
   io.in(socket.userData.userId).clients((err, clients) => {
-    userController.changeStatus(socket.userData.userId, clients, io);
-    // console.log(clients);
+    userService.changeUserStatusById(socket.userData.userId, clients, io);
+    console.log(clients);
   });
   socket.on('typing', (data) => {
     socket.to(data.userId).emit('typing', { conversationId: data.roomId });
@@ -33,8 +35,10 @@ io.use((socket, next) => {
   socket.on('disconnect', () => {
     socket.leave(socket.userData.userId);
     io.in(socket.userData.userId).clients((err, clients) => {
-      userController.changeStatus(socket.userData.userId, clients, io);
-      // console.log(clients);
+      userService.changeUserStatusById(socket.userData.userId, clients, io);
+      console.log(clients);
     });
   });
 });
+
+module.exports = io;

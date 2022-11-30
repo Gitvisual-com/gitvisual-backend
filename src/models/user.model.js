@@ -29,6 +29,11 @@ const userSchema = mongoose.Schema(
       trim: true,
       lowercase: true,
     },
+    acitivityStatus: {
+      type: String,
+      enum: ['online', 'offline'],
+      default: 'offline',
+    },
     password: {
       type: String,
       required: true,
