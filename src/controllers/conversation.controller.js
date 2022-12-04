@@ -10,7 +10,7 @@ const initiateConversation = catchAsync(async (req, res) => {
 
   const conversation = await conversationService.createConversation(conversationBody);
 
-  socketService.initiateConversation(req, {
+  socketService.initiateConversation({
     conversation,
     receiver: req.body.receiver,
   });

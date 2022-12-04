@@ -1,10 +1,10 @@
 ## Quick Start
 
-```
+
 
 Install the dependencies:
 
-```bash
+```
 yarn install
 ```
 
