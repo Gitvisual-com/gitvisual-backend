@@ -22,9 +22,8 @@ const createJob = catchAsync(async (req, res) => {
 });
 
 const getJobs = catchAsync(async (req, res) => {
-  const filter = pick(req.query, []);
   const options = pick(req.query, ['sortBy', 'limit', 'page']);
-  const result = await jobService.queryJobs(filter, options);
+  const result = await jobService.queryJobs({}, options);
   res.send(result);
 });
 

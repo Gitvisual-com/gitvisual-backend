@@ -15,7 +15,7 @@ const sendReadMessages = (data) => {
   });
 };
 
-const initiateConversation = (req, data) => {
+const initiateConversation = (data) => {
   const { io } = global;
 
   const { receiver, conversation } = data;
