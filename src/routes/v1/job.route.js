@@ -14,7 +14,7 @@ router
   .route('/')
   .post(
     auth('manageJobs'),
-    upload.array('companyLogo'),
+    upload.single('companyLogo'),
     jsonify(['tags']),
     validate(jobValidation.createJob),
     jobController.createJob
@@ -26,7 +26,7 @@ router
   .get(auth('getJobs'), validate(jobValidation.getJob), jobController.getJob)
   .patch(
     auth('manageJobs'),
-    upload.array('companyLogo'),
+    upload.single('companyLogo'),
     jsonify(['tags']),
     validate(jobValidation.updateJob),
     jobController.updateJob

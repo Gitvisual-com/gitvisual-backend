@@ -28,6 +28,10 @@ const queryUsers = async (filter, options) => {
   return users;
 };
 
+const changeUserStatusById = async (id, status) => {
+  return User.findByIdAndUpdate(id, { acitivityStatus: status }, { useFindAndModify: true });
+};
+
 /**
  * Get user by id
  * @param {ObjectId} id
@@ -86,4 +90,5 @@ module.exports = {
   getUserByEmail,
   updateUserById,
   deleteUserById,
+  changeUserStatusById,
 };
