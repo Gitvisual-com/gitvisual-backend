@@ -1,23 +1,14 @@
 const httpStatus = require('http-status');
-const mongoose = require('mongoose');
 const { Conversation } = require('../models');
 const ApiError = require('../utils/ApiError');
 
-const checkConversation = (req) => {
-  const conversation = Conversation.find({
-    members: { $in: mongoose.Types.ObjectId(req.userData.userId) },
-    _id: mongoose.Types.ObjectId(req.body.roomId),
-  });
-  if (conversation) {
-    if (conversation.length) {
-      // eslint-disable-next-line prefer-destructuring
-      req.conversation = conversation[0];
-      return;
-    }
-    throw new ApiError(httpStatus.NOT_FOUND);
+const checkConversation = async (req, res, next) => {
+  const conversation = await Conversation.findById(req.body.conversationId);
+  if (!conversation) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'conversation not found');
   }
-
-  throw new ApiError(httpStatus.NOT_FOUND);
+  res.locals.conversation = conversation;
+  next();
 };
 
 module.exports = checkConversation;

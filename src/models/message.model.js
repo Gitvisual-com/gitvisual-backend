@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const { toJSON, paginate } = require('./plugins');
 
 const messageSchema = mongoose.Schema({
-  roomId: { type: mongoose.Schema.Types.ObjectId, ref: 'Conversation' },
+  conversationId: { type: mongoose.Schema.Types.ObjectId, ref: 'Conversation' },
   sender: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   text: {
     type: String,
@@ -16,7 +16,9 @@ const messageSchema = mongoose.Schema({
     required: true,
   },
   receiver: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-  mediaUrl: String,
+  mediaUrl: {
+    type: String,
+  },
   read: { type: Boolean, default: false },
 });
 
@@ -25,4 +27,5 @@ messageSchema.plugin(toJSON);
 messageSchema.plugin(paginate);
 
 const Message = mongoose.model('Message', messageSchema);
+
 module.exports = Message;

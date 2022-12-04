@@ -1,125 +1,77 @@
 const httpStatus = require('http-status');
-
-const pick = require('../utils/pick');
 const catchAsync = require('../utils/catchAsync');
-const ApiError = require('../utils/ApiError');
-const { conversationService } = require('../services');
+const pick = require('../utils/pick');
+const { conversationService, socketService } = require('../services');
 
-const sendMedia = (req, res) => {
-  const message = {
-    roomId: req.body.conversationId,
-    sender: req.userData.userId,
+const initiateConversation = catchAsync(async (req, res) => {
+  const conversationBody = {
+    members: [req.user.id, req.body.receiverId],
+  };
+
+  const conversation = await conversationService.createConversation(conversationBody);
+
+  socketService.initiateConversation(req, {
+    conversation,
+    receiver: req.body.receiver,
+  });
+
+  res.send(conversation);
+});
+
+const sendMessage = catchAsync(async (req, res) => {
+  const messagebody = {
+    conversationId: req.body.conversationId,
+    sender: req.user.id,
     receiver: req.body.receiver,
     messageType: req.body.messageType,
-    media: req.file,
+    ...(req.body.messageType === 'text' && { text: req.body.text }),
+    ...(req.body.messageType === 'media' && { mediaUrl: req.file.path.replace('public', '') }),
   };
 
-  conversationService.createMessage(message);
-  const updatePayload = {
+  const message = await conversationService.createMessage(messagebody);
+  const update = {
     $inc: { messageCount: 1 },
   };
-  conversationService.updateConversationById(req.body.conversationId, updatePayload);
 
-  messageHandler.sendImageMessage(req, {
-    message: { ...result.toObject(), uuid: req.body.uuid },
-    receiver: JSON.parse(req.body.receiver),
+  await conversationService.updateConversationById(req.body.conversationId, update);
+
+  socketService.sendMessage({
+    message,
+    receiver: req.body.receiver,
   });
-  res.status(200).json({ message: { ...result.toObject(), uuid: req.body.uuid } });
-};
 
-const getChatRooms = (req, res) => {
-  ChatRoom.getRooms(mongoose.Types.ObjectId(req.userData.userId))
-    .then((rooms) => {
-      res.status(200).json({ rooms });
-    })
-    .catch((err) => {
-      console.log(err.message);
-      res.status(500).json({ message: err.message });
-    });
-};
+  res.sendStatus(httpStatus.CREATED);
+});
 
-const getMessagesForConversation = (req, res) => {
-  let query = null;
-  if (req.body.initialFetch) {
-    query = { roomId: req.body._id };
-  } else {
-    query = {
-      $and: [
-        {
-          _id: {
-            $lt: req.body.lastId,
-          },
-          roomId: req.body._id,
-        },
-      ],
-    };
-  }
-  Message.find(query)
-    .limit(50)
-    .sort({ createdAt: -1 })
-    .then((result) => {
-      res.status(200).json({ messages: result });
-    })
-    .catch((err) => {
-      console.log(err.message);
-      res.status(500).json({ message: err.message });
-    });
-};
+const getUserConversations = catchAsync(async (req, res) => {
+  const conversations = await conversationService.getConversationsByUserId(req.user.id);
+  res.send(conversations);
+});
 
-const sendMessage = (req, res) => {
-  new Message({
-    roomId: req.body.roomId,
-    sender: req.userData.userId,
-    text: req.body.value,
-    receiver: req.body.receiver._id,
-    messageType: 'text',
-  })
-    .save()
-    .then((result) => {
-      ChatRoom.findByIdAndUpdate({ _id: req.body.roomId }, { $inc: { messages: 1 } })
-        .then((result) => console.log(result))
-        .catch((err) => {
-          console.log(err.message);
-        });
-      messageHandler.sendMessage(req, {
-        message: { ...result.toObject() },
-        receiver: req.body.receiver,
-      });
-      res.status(200).json({ message: { ...result.toObject(), uuid: req.body.uuid } });
-    })
-    .catch((err) => {
-      console.log(err.message);
-      res.status(500).json({ message: err.message });
-    });
-};
+const getMessagesForConversation = catchAsync(async (req, res) => {
+  const filter = pick(req.query, ['conversationId']);
+  const options = pick(req.query, ['sortBy', 'limit', 'page']);
+  const result = await conversationService.queryMessagesByConversationId(filter, options);
+  res.send(result);
+});
 
-const readMessages = (req, res) => {
-  const receiverId = req.room.members.filter((member) => member.toString().trim() !== req.userData.userId.toString().trim());
-  Message.updateMany(
-    {
-      _id: { $in: req.body.messageIds },
-      receiver: mongoose.Types.ObjectId(req.userData.userId),
-    },
-    { $set: { read: true } },
-    { multi: true }
-  )
-    .then(() => {
-      messageHandler.sendReadMessage(req, {
-        messageIds: req.body.messageIds,
-        receiver: receiverId[0],
-        roomId: req.room._id,
-      });
-      res.status(200).json({ read: 'messages' });
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).json({ msg: err.message });
-    });
-};
+const readMessages = catchAsync(async (req, res) => {
+  const receiverId = res.locals.conversation.members.filter((member) => !member.equals(req.user.id));
+
+  await conversationService.readMessages(req.body.messageIds);
+
+  socketService.sendReadMessages({
+    messageIds: req.body.messageIds,
+    receiver: receiverId[0].toString(),
+    conversationId: res.locals.conversation._id,
+  });
+  res.sendStatus(httpStatus.OK);
+});
 
 module.exports = {
-  sendMedia,
   sendMessage,
   readMessages,
   getMessagesForConversation,
+  getUserConversations,
+  initiateConversation,
 };

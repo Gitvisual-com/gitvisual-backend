@@ -14,7 +14,6 @@ const { authLimiter } = require('./middlewares/rateLimiter');
 const routes = require('./routes/v1');
 const { errorConverter, errorHandler } = require('./middlewares/error');
 const ApiError = require('./utils/ApiError');
-const io = require('./config/socket');
 
 const app = express();
 
@@ -45,10 +44,6 @@ app.use(compression());
 // enable cors
 app.use(cors());
 app.options('*', cors());
-
-// enable socket.io
-app.io = io;
-app.set('socketio', io);
 
 // jwt authentication
 app.use(passport.initialize());

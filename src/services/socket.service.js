@@ -1,53 +1,31 @@
-const sendMessage = (req, data) => {
-  const io = req.app.get('socketio');
+const sendMessage = (data) => {
+  const { io } = global;
 
-  const { message, receiver } = { ...data };
-  io.sockets.in(receiver._id).emit('newMessage', {
-    ...message,
-  });
+  const { message, receiver } = data;
+  io.sockets.in(receiver).emit('newMessage', message);
 };
 
-const sendReadMessages = (req, data) => {
-  const io = req.app.get('socketio');
+const sendReadMessages = (data) => {
+  const { io } = global;
 
-  const { messageIds, roomId, receiver } = { ...data };
+  const { messageIds, conversationId, receiver } = data;
   io.sockets.in(receiver).emit('readMessages', {
     messageIds,
-    roomId,
+    conversationId,
   });
 };
 
-const sendMediaMessageRequest = (req, data) => {
-  const io = req.app.get('socketio');
+const initiateConversation = (req, data) => {
+  const { io } = global;
 
-  const { message, receiver } = { ...data };
-  io.sockets.in(receiver._id).emit('mediaMessageRequest', {
-    ...message,
-  });
-};
-
-const sendMediaMessage = (req, data) => {
-  const io = req.app.get('socketio');
-
-  const { message, receiver } = { ...data };
-  io.sockets.in(receiver._id).emit('mediaMessage', {
-    ...message,
-    receiver: receiver._id,
-  });
-};
-
-const sendRoom = (req, data) => {
-  const io = req.app.get('socketio');
-  const { userId, room } = data;
-  io.sockets.in(userId).emit('newRoom', {
-    ...room,
-    lastMessage: [],
-  });
+  const { receiver, conversation } = data;
+  io.sockets.in(receiver).emit('newRoom', conversation);
 };
 
 const sendActivityStatus = (data) => {
-  const { req, user, userId, activityStatus } = data;
-  const io = req.app.get('socketio');
+  const { io } = global;
+
+  const { user, userId, activityStatus } = data;
   io.sockets.in(userId).emit('activityStatusUpdate', {
     activityStatus,
     user,
@@ -57,8 +35,6 @@ const sendActivityStatus = (data) => {
 module.exports = {
   sendMessage,
   sendReadMessages,
-  sendMediaMessageRequest,
-  sendMediaMessage,
-  sendRoom,
+  initiateConversation,
   sendActivityStatus,
 };

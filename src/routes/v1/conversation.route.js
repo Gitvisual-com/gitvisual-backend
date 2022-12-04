@@ -9,31 +9,29 @@ const checkConversation = require('../../middlewares/checkConversation');
 
 const router = express.Router();
 
-router.get('/', auth('getConversations'), conversationController.getConversationRooms);
-
-router.get(
-  '/messages',
-  auth('getMessages'),
-  validate(conversationValidaton.getMessagesForConversation),
-  conversationController.getMessagesForConversation
-);
+router.get('/', auth('getConversations'), conversationController.getUserConversations);
 
 router.post(
-  '/media',
-  auth('sendMessages'),
-  upload.single('file'),
-  validate(conversationValidaton.sendMedia),
-  checkConversation,
-  conversationController.sendMedia
+  '/init',
+  auth('initConversation'),
+  validate(conversationValidaton.initiateConversation),
+  conversationController.initiateConversation
 );
 
-router.post(
-  '/message',
-  auth('sendMessages'),
-  validate(conversationValidaton.sendMessage),
-  checkConversation,
-  conversationController.sendMessage
-);
+router
+  .route('/messages')
+  .get(
+    auth('getMessages'),
+    validate(conversationValidaton.getMessagesForConversation),
+    conversationController.getMessagesForConversation
+  )
+  .post(
+    auth('sendMessages'),
+    upload.single('media'),
+    validate(conversationValidaton.sendMessage),
+    checkConversation,
+    conversationController.sendMessage
+  );
 
 router.post(
   '/messages/read',

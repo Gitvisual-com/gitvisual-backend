@@ -10,6 +10,7 @@ const allRoles = {
     'sendMessages',
     'getMessages',
     'readMessages',
+    'initConversation',
   ],
 };
 

@@ -11,6 +11,15 @@ const createMessage = async (messageBody) => {
   return Message.create(messageBody);
 };
 
+const createConversation = async (conversationBody) => {
+  const { members } = conversationBody;
+  const conversation = await Conversation.find({ members: { $in: members } });
+  if (conversation) {
+    throw new ApiError(httpStatus.CONFLICT, 'Conversation already exists');
+  }
+  return Conversation.create(conversationBody);
+};
+
 /**
  * Query for messages
  * @param {Object} options - Query options
@@ -19,68 +28,50 @@ const createMessage = async (messageBody) => {
  * @param {number} [options.page] - Current page (default = 1)
  * @returns {Promise<QueryResult>}
  */
-const queryMessages = async (filter, options) => {
+const queryMessagesByConversationId = async (filter, options) => {
   const messages = await Message.paginate(filter, options);
   return messages;
 };
 
-/**
- * Get message by id
- * @param {ObjectId} id
- * @returns {Promise<Message>}
- */
-const getMessageById = async (id) => {
-  return Message.findById(id);
+const getConversationsByUserId = async (userId) => {
+  return Conversation.find({ members: userId }).populate({
+    path: 'members',
+  });
 };
-
-const getConversationById = async (id) => {
-  return Conversation.findById(id);
-};
-
 /**
  * Get message by userId
  * @param {string} userId
  * @returns {Promise<Message>}
  */
-const getMessagesByUserId = async (userId) => {
-  return Message.find({ userId });
+const getMessagesByConversationId = async (conversationId) => {
+  return Message.find({ conversationId });
 };
 
 /**
- * Update message by id
+ * Update conversation by id
  * @param {ObjectId} messageId
  * @param {Object} updateBody
  * @returns {Promise<Message>}
  */
 const updateConversationById = async (conversationId, updateBody) => {
-  const conversation = await getConversationById(conversationId);
-  if (!conversation) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Message not found');
-  }
-  Object.assign(conversation, updateBody);
-  await conversation.save();
-  return conversation;
+  return Conversation.findByIdAndUpdate(conversationId, updateBody, { useFindAndModify: true });
 };
 
-/**
- * Delete message by id
- * @param {ObjectId} messageId
- * @returns {Promise<Message>}
- */
-const deleteMessageById = async (messageId) => {
-  const message = await getMessageById(messageId);
-  if (!message) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Message not found');
-  }
-  await message.remove();
-  return message;
+const readMessages = async (messageIds) => {
+  return Message.updateMany(
+    {
+      _id: { $in: messageIds },
+    },
+    { $set: { read: true } }
+  );
 };
 
 module.exports = {
   createMessage,
-  queryMessages,
-  getMessageById,
-  getMessagesByUserId,
+  createConversation,
+  queryMessagesByConversationId,
+  getMessagesByConversationId,
   updateConversationById,
-  deleteMessageById,
+  getConversationsByUserId,
+  readMessages,
 };

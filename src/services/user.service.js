@@ -29,7 +29,7 @@ const queryUsers = async (filter, options) => {
 };
 
 const changeUserStatusById = async (id, status) => {
-  return User.findByIdAndUpdate(id, { acitivityStatus: status });
+  return User.findByIdAndUpdate(id, { acitivityStatus: status }, { useFindAndModify: true });
 };
 
 /**
