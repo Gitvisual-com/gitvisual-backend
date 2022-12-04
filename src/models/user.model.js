@@ -97,6 +97,10 @@ const userSchema = mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    likedJobs: [{ type: mongoose.SchemaTypes.ObjectId, ref: 'User' }],
+    viewedJobs: [{ type: mongoose.SchemaTypes.ObjectId, ref: 'User' }],
+    likedPosts: [{ type: mongoose.SchemaTypes.ObjectId, ref: 'User' }],
+    viewedPosts: [{ type: mongoose.SchemaTypes.ObjectId, ref: 'User' }],
   },
   {
     timestamps: true,

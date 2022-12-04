@@ -11,6 +11,10 @@ const allRoles = {
     'getMessages',
     'readMessages',
     'initConversation',
+    'likeJobs',
+    'viewJobs',
+    'likePosts',
+    'viewPosts',
   ],
 };
 
