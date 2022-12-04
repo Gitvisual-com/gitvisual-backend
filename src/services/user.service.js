@@ -69,6 +69,10 @@ const updateUserById = async (userId, updateBody) => {
   return user;
 };
 
+const patchUserById = async (userId, patch) => {
+  return User.findByIdAndUpdate(userId, patch);
+};
+
 /**
  * Delete user by id
  * @param {ObjectId} userId
@@ -83,6 +87,10 @@ const deleteUserById = async (userId) => {
   return user;
 };
 
+const findByFilter = async (filter) => {
+  return User.find(filter);
+};
+
 module.exports = {
   createUser,
   queryUsers,
@@ -91,4 +99,6 @@ module.exports = {
   updateUserById,
   deleteUserById,
   changeUserStatusById,
+  patchUserById,
+  findByFilter,
 };

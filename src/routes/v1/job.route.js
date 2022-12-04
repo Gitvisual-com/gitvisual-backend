@@ -21,6 +21,10 @@ router
   )
   .get(auth('getJobs'), validate(jobValidation.getJobs), jobController.getJobs);
 
+router.get('/like/:jobId', auth('likeJobs'), validate(jobValidation.likeJob), jobController.likeJob);
+
+router.get('/view/:jobId', auth('viewJobs'), validate(jobValidation.viewJob), jobController.viewJob);
+
 router
   .route('/:jobId')
   .get(auth('getJobs'), validate(jobValidation.getJob), jobController.getJob)

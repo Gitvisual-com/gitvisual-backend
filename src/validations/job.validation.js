@@ -30,6 +30,18 @@ const getJob = {
   }),
 };
 
+const likeJob = {
+  params: Joi.object().keys({
+    jobId: Joi.string().custom(objectId),
+  }),
+};
+
+const viewJob = {
+  params: Joi.object().keys({
+    jobId: Joi.string().custom(objectId),
+  }),
+};
+
 const udpateJob = {
   params: Joi.object().keys({
     jobId: Joi.required().custom(objectId),
@@ -62,4 +74,6 @@ module.exports = {
   getJob,
   udpateJob,
   deleteJob,
+  likeJob,
+  viewJob,
 };

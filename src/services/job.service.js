@@ -58,6 +58,10 @@ const updateJobById = async (jobId, updateBody) => {
   return job;
 };
 
+const patchJobById = async (jobId, patch) => {
+  return Job.findByIdAndUpdate(jobId, patch);
+};
+
 /**
  * Delete job by id
  * @param {ObjectId} jobId
@@ -79,4 +83,5 @@ module.exports = {
   getJobsByUserId,
   updateJobById,
   deleteJobById,
+  patchJobById,
 };

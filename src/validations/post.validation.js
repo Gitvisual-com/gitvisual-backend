@@ -40,6 +40,18 @@ const updatePost = {
     .min(1),
 };
 
+const likePost = {
+  params: Joi.object().keys({
+    postId: Joi.string().custom(objectId),
+  }),
+};
+
+const viewPost = {
+  params: Joi.object().keys({
+    postId: Joi.string().custom(objectId),
+  }),
+};
+
 const deletePost = {
   params: Joi.object().keys({
     postId: Joi.string().custom(objectId),
@@ -52,4 +64,6 @@ module.exports = {
   getPost,
   updatePost,
   deletePost,
+  likePost,
+  viewPost,
 };

@@ -21,6 +21,10 @@ router
   )
   .get(auth('getPosts'), validate(postValidation.getPosts), postController.getPosts);
 
+router.get('/like/:postId', auth('likePosts'), validate(postValidation.likePost), postController.likePost);
+
+router.get('/view/:postId', auth('viewPosts'), validate(postValidation.viewPost), postController.viewPost);
+
 router
   .route('/:postId')
   .get(auth('getPosts'), validate(postValidation.getPost), postController.getPost)

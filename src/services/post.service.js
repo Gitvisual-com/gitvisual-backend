@@ -72,6 +72,10 @@ const deletePostById = async (postId) => {
   return post;
 };
 
+const patchPostById = async (postId, patch) => {
+  return Post.findByIdAndUpdate(postId, patch);
+};
+
 module.exports = {
   createPost,
   queryPosts,
@@ -79,4 +83,5 @@ module.exports = {
   getPostsByUserId,
   updatePostById,
   deletePostById,
+  patchPostById,
 };

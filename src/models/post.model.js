@@ -39,6 +39,8 @@ const postSchema = mongoose.Schema(
       type: Number,
       default: 0,
     },
+    likedBy: [{ type: mongoose.SchemaTypes.ObjectId, ref: 'User' }],
+    viewedBy: [{ type: mongoose.SchemaTypes.ObjectId, ref: 'User' }],
   },
   {
     timestamps: true,
