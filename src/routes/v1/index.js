@@ -4,6 +4,7 @@ const userRoute = require('./user.route');
 const docsRoute = require('./docs.route');
 const postRoute = require('./post.route');
 const jobRoute = require('./job.route');
+const conversationRoute = require('./conversation.route');
 const config = require('../../config/config');
 
 const router = express.Router();
@@ -24,6 +25,10 @@ const defaultRoutes = [
   {
     path: '/jobs',
     route: jobRoute,
+  },
+  {
+    path: '/conversations',
+    route: conversationRoute,
   },
 ];
 

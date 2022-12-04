@@ -6,7 +6,7 @@ const ApiError = require('../utils/ApiError');
 const { jobService } = require('../services');
 
 const createJob = catchAsync(async (req, res) => {
-  const companyLogo = req.files[0];
+  const companyLogo = req.file;
   if (companyLogo) {
     const jobPayload = {
       ...req.body,
@@ -37,7 +37,7 @@ const getJob = catchAsync(async (req, res) => {
 });
 
 const updateJob = catchAsync(async (req, res) => {
-  const companyLogo = req.files[0];
+  const companyLogo = req.file;
   if (companyLogo) {
     const jobPayload = {
       ...req.body,
