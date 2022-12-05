@@ -4,10 +4,12 @@ const ApiError = require('../utils/ApiError');
 const jsonify = (fields) => (req, _res, next) => {
   try {
     fields.forEach((field) => {
-      req.body[field] = JSON.parse(req.body[field]);
+      if (req.body[field]) {
+        req.body[field] = req.body[field].split(',');
+      }
     });
   } catch (e) {
-    return next(new ApiError(httpStatus.BAD_REQUEST, `invalid request body: ${e.message}, avoid using single quotes`));
+    return next(new ApiError(httpStatus.BAD_REQUEST, `invalid request body: ${e.message}`));
   }
   return next();
 };

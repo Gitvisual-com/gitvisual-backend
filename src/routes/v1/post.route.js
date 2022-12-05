@@ -2,7 +2,7 @@ const express = require('express');
 
 const auth = require('../../middlewares/auth');
 const upload = require('../../middlewares/storage');
-const jsonify = require('../../middlewares/jsonify');
+const parseStringToArray = require('../../middlewares/parseStringToArray');
 const validate = require('../../middlewares/validate');
 
 const postValidation = require('../../validations/post.validation');
@@ -15,7 +15,7 @@ router
   .post(
     auth('managePosts'),
     upload.array('media'),
-    jsonify(['tags', 'tools']),
+    parseStringToArray(['tags', 'tools']),
     validate(postValidation.createPost),
     postController.createPost
   )
@@ -31,7 +31,7 @@ router
   .patch(
     auth('managePosts'),
     upload.array('media'),
-    jsonify(['tags', 'tools']),
+    parseStringToArray(['tags', 'tools']),
     validate(postValidation.updatePost),
     postController.updatePost
   )

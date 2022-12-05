@@ -42,6 +42,13 @@ const getJobsByUserId = async (userId) => {
   return Job.find({ userId });
 };
 
+const seachJobsByString = async (text) => {
+  const regex = new RegExp(`${text}`);
+  return Job.find({
+    $or: [{ title: { $regex: regex } }, { description: { $regex: regex } }],
+  });
+};
+
 /**
  * Update job by id
  * @param {ObjectId} jobId
@@ -84,4 +91,5 @@ module.exports = {
   updateJobById,
   deleteJobById,
   patchJobById,
+  seachJobsByString,
 };

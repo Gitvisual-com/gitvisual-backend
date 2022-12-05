@@ -24,6 +24,12 @@ const getJobs = {
   }),
 };
 
+const searchJobs = {
+  body: Joi.object().keys({
+    text: Joi.string().required(),
+  }),
+};
+
 const getJob = {
   params: Joi.object().keys({
     jobId: Joi.string().custom(objectId),
@@ -76,4 +82,5 @@ module.exports = {
   deleteJob,
   likeJob,
   viewJob,
+  searchJobs,
 };
