@@ -35,6 +35,11 @@ const getJob = catchAsync(async (req, res) => {
   res.send(job);
 });
 
+const searchJobs = catchAsync(async (req, res) => {
+  const jobs = await jobService.seachJobsByString(req.body.text);
+  res.send(jobs);
+});
+
 const likeJob = catchAsync(async (req, res) => {
   const filter = { _id: req.user.id, likedJobs: req.params.jobId };
   const user = await userService.findByFilter(filter);
@@ -103,4 +108,5 @@ module.exports = {
   deleteJob,
   likeJob,
   viewJob,
+  searchJobs,
 };

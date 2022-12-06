@@ -34,6 +34,9 @@ const userSchema = mongoose.Schema(
       enum: ['online', 'offline'],
       default: 'offline',
     },
+    customerId: {
+      type: String,
+    },
     password: {
       type: String,
       required: true,

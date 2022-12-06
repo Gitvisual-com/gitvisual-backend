@@ -15,6 +15,9 @@ const allRoles = {
     'viewJobs',
     'likePosts',
     'viewPosts',
+    'searchJobs',
+    'pay',
+    'subscribe',
   ],
 };
 

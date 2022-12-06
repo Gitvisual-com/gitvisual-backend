@@ -6,3 +6,4 @@ module.exports.postService = require('./post.service');
 module.exports.jobService = require('./job.service');
 module.exports.conversationService = require('./conversation.service');
 module.exports.socketService = require('./socket.service');
+module.exports.subscriptionService = require('./subscription.service');

@@ -5,6 +5,8 @@ const docsRoute = require('./docs.route');
 const postRoute = require('./post.route');
 const jobRoute = require('./job.route');
 const conversationRoute = require('./conversation.route');
+const subscriptionRoute = require('./subscription.route');
+
 const config = require('../../config/config');
 
 const router = express.Router();
@@ -29,6 +31,10 @@ const defaultRoutes = [
   {
     path: '/conversations',
     route: conversationRoute,
+  },
+  {
+    path: '/subscriptions',
+    route: subscriptionRoute,
   },
 ];
 

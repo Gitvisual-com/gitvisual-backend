@@ -3,7 +3,7 @@ const express = require('express');
 const auth = require('../../middlewares/auth');
 const upload = require('../../middlewares/storage');
 const validate = require('../../middlewares/validate');
-const jsonify = require('../../middlewares/jsonify');
+const parseStringToArray = require('../../middlewares/parseStringToArray');
 
 const jobValidation = require('../../validations/job.validation');
 const jobController = require('../../controllers/job.controller');
@@ -15,7 +15,7 @@ router
   .post(
     auth('manageJobs'),
     upload.single('companyLogo'),
-    jsonify(['tags']),
+    parseStringToArray(['tags']),
     validate(jobValidation.createJob),
     jobController.createJob
   )
@@ -25,13 +25,15 @@ router.get('/like/:jobId', auth('likeJobs'), validate(jobValidation.likeJob), jo
 
 router.get('/view/:jobId', auth('viewJobs'), validate(jobValidation.viewJob), jobController.viewJob);
 
+router.post('/search', auth('searchJobs'), validate(jobValidation.searchJobs), jobController.searchJobs);
+
 router
   .route('/:jobId')
   .get(auth('getJobs'), validate(jobValidation.getJob), jobController.getJob)
   .patch(
     auth('manageJobs'),
     upload.single('companyLogo'),
-    jsonify(['tags']),
+    parseStringToArray(['tags']),
     validate(jobValidation.updateJob),
     jobController.updateJob
   )
