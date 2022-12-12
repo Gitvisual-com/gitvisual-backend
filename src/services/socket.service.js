@@ -19,7 +19,7 @@ const initiateConversation = (data) => {
   const { io } = global;
 
   const { receiver, conversation } = data;
-  io.sockets.in(receiver).emit('newRoom', conversation);
+  io.sockets.in(receiver).emit('newConversation', conversation);
 };
 
 const sendActivityStatus = (data) => {
