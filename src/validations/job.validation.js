@@ -24,6 +24,17 @@ const getJobs = {
   }),
 };
 
+const getJobForUser = {
+  params: Joi.object().keys({
+    userId: Joi.required().custom(objectId),
+  }),
+  query: Joi.object().keys({
+    sortBy: Joi.string(),
+    limit: Joi.number().integer(),
+    page: Joi.number().integer(),
+  }),
+};
+
 const searchJobs = {
   body: Joi.object().keys({
     text: Joi.string().required(),
@@ -77,6 +88,7 @@ const deleteJob = {
 module.exports = {
   createJob,
   getJobs,
+  getJobForUser,
   getJob,
   updateJob,
   deleteJob,

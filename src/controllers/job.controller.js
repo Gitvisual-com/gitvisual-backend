@@ -27,6 +27,12 @@ const getJobs = catchAsync(async (req, res) => {
   res.send(result);
 });
 
+const getJobsForUser = catchAsync(async (req, res) => {
+  const options = pick(req.query, ['sortBy', 'limit', 'page']);
+  const result = await jobService.queryJobs({ posterId: req.params.userId }, options);
+  res.send(result);
+});
+
 const getJob = catchAsync(async (req, res) => {
   const job = await jobService.getJobById(req.params.jobId);
   if (!job) {
@@ -103,6 +109,7 @@ const deleteJob = catchAsync(async (req, res) => {
 module.exports = {
   createJob,
   getJobs,
+  getJobsForUser,
   getJob,
   updateJob,
   deleteJob,
